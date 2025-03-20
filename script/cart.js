@@ -1,25 +1,104 @@
-const handleAddToCart=()=>{
-    const productName = document.getElementById("product-name")
-    const productQuantity = document.getElementById("product-quantity")
-    const name = productName.value;
-    const quantity = productQuantity.value;
-    handleSetToLocalStorage(name, quantity)
-    displayProduct(name, quantity)
-    productName.value ='';
-    productQuantity.value ='';
-}
+// const handleAddToCart=()=>{
+//     const productName = document.getElementById("product-name")
+//     const productQuantity = document.getElementById("product-quantity")
+//     const name = productName.value;
+//     const quantity = productQuantity.value;
+//     saveProductToLocalStorage(name, quantity)
+//     displayProduct(name, quantity)
+//     productName.value ='';
+//     productQuantity.value ='';
+// }
 
-const displayProduct=(productName,quantity )=>{
-const productContainer = document.getElementById("product-container")
-const li = document.createElement("li")
-li.innerText =` ${productName}:${quantity}`;
-productContainer.appendChild(li)
-}
+// const displayProduct=(productName,quantity )=>{
+// const productContainer = document.getElementById("product-container")
+// const li = document.createElement("li")
+// li.innerText =` ${productName}:${quantity}`;
+// productContainer.appendChild(li)
+// }
 
 
-const handleSetToLocalStorage=(productName, quantity)=>{
-    // console.log(productName, quantity)
-    const newProduct = {name: quantity};
-    localStorage.setItem("cart", JSON.stringify(newProduct) )
+// // const handleSetToLocalStorage=(productName, quantity)=>{
+// //     // console.log(productName, quantity)
+// //     // const newProduct = {name: quantity};
+// //     // localStorage.setItem("cart", JSON.stringify(newProduct) )
+
+
     
-}
+// // }
+
+
+// const getProductFromLocalstorage=()=>{
+//     let cart ='';
+//     const getProduct = localStorage.getItem("cart")
+//     if(getProduct){
+//         cart = JSON.parse(getProduct)
+//     }
+//     return cart;
+// }
+
+// const saveProductToLocalStorage = (productName, quantity)=>{
+//     const cart  = getProductFromLocalstorage();
+//     console.log(cart)
+// }
+
+
+
+
+
+const handleAddToCart = () => {
+    const productName = document.getElementById("product-name");
+    const productQuantity = document.getElementById("product-quantity");
+
+    const name = productName.value.trim();
+    const quantity = productQuantity.value.trim();
+
+    if (name === "" || quantity === "") {
+        alert("Please enter both product name and quantity.");
+        return;
+    }
+
+    saveProductToLocalStorage(name, quantity);
+    displayProduct(name, quantity);
+
+    productName.value = '';
+    productQuantity.value = '';
+};
+
+const displayProduct = (productName, quantity) => {
+    const productContainer = document.getElementById("product-container");
+    
+    // আগের লিস্ট মুছে নতুন লিস্ট দেখানোর জন্য
+    productContainer.innerHTML = '';
+
+    const cart = getProductFromLocalstorage();
+    for (const [name, qty] of Object.entries(cart)) {
+        const li = document.createElement("li");
+        li.innerText = `${name}: ${qty}`;
+        productContainer.appendChild(li);
+    }
+};
+
+// লোকাল স্টোরেজ থেকে ডাটা রিট্রিভ করার ফাংশন
+const getProductFromLocalstorage = () => {
+    let cart = localStorage.getItem("cart");
+    return cart ? JSON.parse(cart) : {};
+};
+
+// লোকাল স্টোরেজে ডাটা সংরক্ষণের ফাংশন
+const saveProductToLocalStorage = (productName, quantity) => {
+    const cart = getProductFromLocalstorage();
+    
+    // আগের ডাটা ঠিক রেখে নতুন প্রোডাক্ট আপডেট করা হবে
+    cart[productName] = quantity;
+    
+    // আপডেট করা cart লোকাল স্টোরেজে সেট করা হবে
+    localStorage.setItem("cart", JSON.stringify(cart));
+};
+
+// লোকাল স্টোরেজ থেকে ডাটা লোড করে UI-তে দেখানোর জন্য
+const loadFromLocalStorage = () => {
+    displayProduct();
+};
+
+// যখন পেজ লোড হবে, তখন লোকাল স্টোরেজ থেকে ডাটা লোড করবে
+window.onload = loadFromLocalStorage;
